@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BI.Jobs": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "test"
+      }
+    }
+  }
+}
