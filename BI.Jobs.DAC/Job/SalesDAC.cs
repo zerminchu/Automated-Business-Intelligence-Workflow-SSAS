@@ -12,17 +12,19 @@ namespace BI.Jobs.DAC.Job
 {
     public class SalesDAC: DAC
     {
-        public void DeleteSalesDataForStoreDate(string storeId, DateTime transDate)
+
+
+                public void DeleteSalesDataForStoreDate(string storeId, DateTime transDate)
         {
             const string SQL_QUERY = @"
                 DELETE d
 FROM FactTransactionDetails d
 INNER JOIN FactTransactionHeaders h
   ON d.TransactionheaderId = h.TransactionHeaderId
-WHERE H.LocationCode = @StoreId AND TransactionDate = @transDate
+WHERE  TransactionDate = @transDate
 
 
-DELETE FactTransactionHeaders WHERE LocationCode = @StoreId AND TransactionDate = @transDate
+DELETE FactTransactionHeaders WHERE TransactionDate = @transDate
 
             ";
 
@@ -39,6 +41,7 @@ DELETE FactTransactionHeaders WHERE LocationCode = @StoreId AND TransactionDate 
             }
         }
 
+   
         public void CreateHeader(string requestId, string headerId, string storeId, DateTime transDt, Tlog data)
         {
             const string SQL_QUERY =
@@ -52,7 +55,6 @@ DELETE FactTransactionHeaders WHERE LocationCode = @StoreId AND TransactionDate 
 ,[TransactionHour]
 ,[PayCode]
 ,[CashierCode]
-,[LocationCode]
 ,[BasketSize]
 ,[CustomerId]
 ,[TotalAmount]
@@ -60,6 +62,8 @@ DELETE FactTransactionHeaders WHERE LocationCode = @StoreId AND TransactionDate 
 ,[TotalAmountIncludeTax]
 ,[receipt_ref_no]
 ,[customId]
+,[destination]
+
 )
 Values(
 @TransactionHeaderId
@@ -71,7 +75,6 @@ Values(
 ,@TransactionHour
 ,@PayCode
 ,@CashierCode
-,@StoreCode
 ,@BasketSize
 ,@CustomerId
 ,@TotalAmount
@@ -79,6 +82,7 @@ Values(
 ,@TotalAmountIncludeTax
 ,@receipt_ref_no
 ,@customId
+,@destination
 ) ";
 
             using (var sqlConnection = new SqlConnection(SQLConnectionString))
@@ -98,14 +102,15 @@ Values(
                     cmd.Parameters.AddWithValue("@BasketSize", DBNull.Value);
                     //cmd.Parameters.AddWithValue("@CustomerId", String.IsNullOrWhiteSpace(data.customer_id) ? DBNull.Value : data.customer_id);
                     cmd.Parameters.AddWithValue("@CustomerId", DBNull.Value);
-                    cmd.Parameters.AddWithValue("@TotalAmount", data.order_sub_total);
-                    //cmd.Parameters.AddWithValue("@TotalAmount", data.order_grand_total);
+                    //cmd.Parameters.AddWithValue("@TotalAmount", data.order_sub_total);
+                   cmd.Parameters.AddWithValue("@TotalAmount", data.order_grand_total);
+                    cmd.Parameters.AddWithValue("@destination", data.destination);
+
 
 
                     string dtKey = transDt.ToString("yyyyMMdd");
                     cmd.Parameters.AddWithValue("@DateKey", dtKey);
-                    cmd.Parameters.AddWithValue("@TotalAmountIncludeTax", data.order_sub_total);
-                    //cmd.Parameters.AddWithValue("@TotalAmountIncludeTax", data.order_grand_total);
+                    cmd.Parameters.AddWithValue("@TotalAmountIncludeTax", data.order_grand_total);
 
                     cmd.Parameters.AddWithValue("@receipt_ref_no", DBNull.Value);
                     cmd.Parameters.AddWithValue("@customId", requestId);
@@ -120,35 +125,32 @@ Values(
         {
             const string SQL_QUERY =
                @" 
-DECLARE @SKUId BIGINT
 
-SELECT TOP 1 @SKUId = SkuId FROM SKU WHERE ProductCode2 = @ProductCode
 
 INSERT INTO FactTransactionDetails
 (
 [TransactionDetailId]
 ,[TransactionHeaderId]
-,[Line]
-,[SKU]
 ,[Quantity]
 ,[UnitPrice]
-,[TaxAmount]
 ,[TotalAmountIncludeTax]
-,[Barcode]
-,[CustomFlag]
+,[transaction_start_datetime]
+,[SKU]
+,[savings]
+
+
 )
 VALUES
 (
 NEWID()
 ,@TransactionHeaderId
-,@Line
-,@SKUId
 ,@Quantity
 ,@UnitPrice
-,@TaxAmount
 ,@TotalAmountIncludeTax
-,@Barcode
-,@CustomFlag
+,@transaction_start_datetime
+,@SKU
+,@savings
+
 ) ";
 
             using (var sqlConnection = new SqlConnection(SQLConnectionString))
@@ -157,16 +159,15 @@ NEWID()
                 {
                     //cmd.Parameters.AddWithValue("@TransactionDetailId", headerId);
                     cmd.Parameters.AddWithValue("@TransactionHeaderId", data.HeaderId);
-                    cmd.Parameters.AddWithValue("@Line", 0);
                     cmd.Parameters.AddWithValue("@ProductCode", data.SkuId);
                     cmd.Parameters.AddWithValue("@Quantity", data.Qty);
                     cmd.Parameters.AddWithValue("@UnitPrice", data.UnitPrice);
-                    cmd.Parameters.AddWithValue("@DiscountAmount", data.Discount);
-                    cmd.Parameters.AddWithValue("@TaxAmount", data.Tax);
                     cmd.Parameters.AddWithValue("@TotalAmountIncludeTax", data.TotalAmountWithTax);
-                    cmd.Parameters.AddWithValue("@Barcode", DBNull.Value);
-                    cmd.Parameters.AddWithValue("@CustomFlag", DBNull.Value);
-                    cmd.Parameters.AddWithValue("@CustomId", requestId);
+                    cmd.Parameters.AddWithValue("@transaction_start_datetime", data.transaction_start_datetime);
+                    cmd.Parameters.AddWithValue("@SKU", data.SkuId);
+                    cmd.Parameters.AddWithValue("@savings", data.savings);
+
+
 
                     sqlConnection.Open();
                     cmd.ExecuteNonQuery();
@@ -174,11 +175,11 @@ NEWID()
             }
         }
 
-        public void SummarizedStore(string requestId, string DateKey, string LocationCode)
+        public void SummarizedStore(string requestId, string DateKey)
         {
             const string SQL_QUERY =
                @" 
-EXEC spSummarized_Sum_Stores_WithoutHour @DateKey, @LocationCode";
+EXEC spSummarized_Sum_Stores_WithoutHour @DateKey";
 
             using (var sqlConnection = new SqlConnection(SQLConnectionString))
             {
@@ -186,7 +187,7 @@ EXEC spSummarized_Sum_Stores_WithoutHour @DateKey, @LocationCode";
                 {
                     //cmd.Parameters.AddWithValue("@TransactionDetailId", headerId);
                     cmd.Parameters.AddWithValue("@DateKey", DateKey);
-                    cmd.Parameters.AddWithValue("@LocationCode", LocationCode);
+                  //  cmd.Parameters.AddWithValue("@LocationCode", LocationCode);
                     sqlConnection.Open();
                     cmd.ExecuteNonQuery();
                 }
@@ -231,7 +232,7 @@ EXEC spSummarized_Sum_Products_WithoutHour @DateKey"; // change the stored proce
                   ,[RegionName]
                   ,[CountryName]
                   ,[AreaName]
-                  ,[LocationCode]
+               
                   ,[LocationName]
                   ,[TotalTransaction]
                   ,[TotalAmount]
@@ -263,7 +264,7 @@ EXEC spSummarized_Sum_Products_WithoutHour @DateKey"; // change the stored proce
                                 t.RegionName = GetDataValue<string>(dr, "RegionName");
                                 t.CountryName = GetDataValue<string>(dr, "CountryName");
                                 t.AreaName = GetDataValue<string>(dr, "AreaName");
-                                t.LocationCode = GetDataValue<string>(dr, "LocationCode");
+                               // t.LocationCode = GetDataValue<string>(dr, "LocationCode");
                                 t.LocationName = GetDataValue<string>(dr, "LocationName");
                                 t.TotalTransaction = GetDataValue<int>(dr, "TotalTransaction");
                                 t.TotalAmount = GetDataValue<decimal>(dr, "TotalAmount");
@@ -291,7 +292,7 @@ EXEC spSummarized_Sum_Products_WithoutHour @DateKey"; // change the stored proce
             try
             {
                 const string SQL_QUERY =
-               @"SELECT [Year]
+               @"SELECT[Year]
       ,[FiscalYear]
       ,[Month]
       ,[FiscalMonth]
@@ -303,14 +304,15 @@ EXEC spSummarized_Sum_Products_WithoutHour @DateKey"; // change the stored proce
       ,[FiscalWeekOfYear]
       ,[DateKey]
       ,[ProductName]
-      ,[CategoryName]
-      ,[DepartmentName]
-      ,[GroupName]
-      ,[DivisionName]
+      ,''
+	  ,''
+	  ,''
+	  ,''
       ,[TotalTransaction]
       ,[TotalAmount]
       ,[BasketSize]
-  FROM [Sum_Products_WithoutHour] ";
+
+                FROM[Sum_Stores_WithoutHour]; ";
 
                 using (var sqlConnection = new SqlConnection(SQLConnectionString))
                 {
@@ -335,13 +337,13 @@ EXEC spSummarized_Sum_Products_WithoutHour @DateKey"; // change the stored proce
                                 t.FiscalWeekOfYear = GetDataValue<string>(dr, "FiscalWeekOfYear");
                                 t.DateKey = GetDataValue<int>(dr, "DateKey");
                                 t.ProductName = GetDataValue<string>(dr, "ProductName");
-                                t.CategoryName = GetDataValue<string>(dr, "CategoryName");
-                                t.DepartmentName = GetDataValue<string>(dr, "DepartmentName");
-                                t.GroupName = GetDataValue<string>(dr, "GroupName");
-                                t.DivisionName = GetDataValue<string>(dr, "DivisionName");
-                                t.TotalTransaction = GetDataValue<decimal>(dr, "TotalTransaction");
-                                t.TotalAmount = GetDataValue<int>(dr, "TotalAmount");
-                                t.BasketSize = GetDataValue<string>(dr, "BasketSize");
+                                t.CategoryName = "";
+                                t.DepartmentName = "";
+                                t.GroupName = "";
+                                t.DivisionName = "";
+                                t.TotalTransaction = 0;
+                                t.TotalAmount = GetDataValue<decimal>(dr, "TotalAmount");
+                                t.BasketSize = GetDataValue<decimal>(dr, "BasketSize");
 
                                 result.Add(t);
                             }

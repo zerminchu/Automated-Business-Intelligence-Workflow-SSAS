@@ -39,6 +39,9 @@ namespace BI.Jobs.Shared.Model
         public string mode { get; set; }
         public List<object> product_qualifiers { get; set; }
         public string sub_total { get; set; }
+        public string savings { get; set; }
+
+
     }
 
     public class SalesModel
@@ -89,8 +92,10 @@ namespace BI.Jobs.Shared.Model
         public string destination { get; set; }
         public string is_overring { get; set; }
         public string deleted_items { get; set; }
-       // public string order_grand_total { get; set; }
-        public string order_sub_total { get; set; }
+       public string order_grand_total { get; set; }
+        //public string order_sub_total { get; set; }
+
+
 
         public List<Valuemeal> valuemeals { get; set; }
         public List<Product> products { get; set; }

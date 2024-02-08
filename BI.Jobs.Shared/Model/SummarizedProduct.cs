@@ -25,7 +25,7 @@ namespace BI.Jobs.Shared.Model
         public string GroupName { get; set; }
         public string DivisionName { get; set; }
         public decimal TotalTransaction { get; set; }
-        public int TotalAmount { get; set; }
-        public string BasketSize { get; set; }
+        public decimal TotalAmount { get; set; }
+        public decimal BasketSize { get; set; }
     }
 }

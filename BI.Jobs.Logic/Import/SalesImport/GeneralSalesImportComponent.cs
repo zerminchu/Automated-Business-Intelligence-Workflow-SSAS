@@ -21,7 +21,7 @@ namespace BI.Jobs.Logic.Import.SalesImport
             string storeId = model.@params.store_id == null ? "HardCodedStore": model.@params.store_id.ToString();
             string transDate = model.@params.tlogs.FirstOrDefault()!.date;
 
-            transDate = "2022-11-22";
+            transDate = "2024-01-01";
 
             CultureInfo enUS = new CultureInfo("en-US");
             DateTime dateValue;
@@ -34,7 +34,7 @@ namespace BI.Jobs.Logic.Import.SalesImport
 
 
             var sDAC = new SalesDAC();
-            sDAC.DeleteSalesDataForStoreDate(storeId, dateValue);
+           sDAC.DeleteSalesDataForStoreDate(storeId, dateValue);
 
             //import
             try
@@ -57,7 +57,7 @@ namespace BI.Jobs.Logic.Import.SalesImport
                             decimal TotalAmountWithTax = Convert.ToDecimal(vm.total_amount);
 
                             SalesDetailModel dm = new SalesDetailModel(newHeaderId, vm.valuemeal_id, qty, unitPrice,
-                                totalQtyWithUnitPrice, discount, totalQtyWithUnitPrice - discount, tax, TotalAmountWithTax);
+                                totalQtyWithUnitPrice, discount, totalQtyWithUnitPrice - discount, tax, TotalAmountWithTax, r.transaction_start_datetime, vm.savings);
 
                             sDAC.CreateDetail(requestId, dm);
 
@@ -73,7 +73,7 @@ namespace BI.Jobs.Logic.Import.SalesImport
                                     decimal vmp_TotalAmountWithTax = Convert.ToDecimal(vmp.amount);
 
                                     SalesDetailModel vmp_dm = new SalesDetailModel(newHeaderId, vmp.product_id, vmp_qty, vmp_unitPrice,
-                                        vmp_totalQtyWithUnitPrice, vmp_discount, vmp_totalQtyWithUnitPrice - vmp_discount, vmp_tax, vmp_TotalAmountWithTax);
+                                        vmp_totalQtyWithUnitPrice, vmp_discount, vmp_totalQtyWithUnitPrice - vmp_discount, vmp_tax, vmp_TotalAmountWithTax, r.transaction_start_datetime, "");
                                 }
                             }
                         }
@@ -94,7 +94,7 @@ namespace BI.Jobs.Logic.Import.SalesImport
                             decimal TotalAmountWithTax = Convert.ToDecimal(p.total_amount);
 
                             SalesDetailModel dm = new SalesDetailModel(newHeaderId, p.product_id, qty, unitPrice,
-                                totalQtyWithUnitPrice, discount, totalQtyWithUnitPrice - discount, tax, TotalAmountWithTax);
+                                totalQtyWithUnitPrice, discount, totalQtyWithUnitPrice - discount, tax, TotalAmountWithTax, r.transaction_start_datetime, "");
 
                             sDAC.CreateDetail(requestId, dm);
                         }
@@ -107,7 +107,7 @@ namespace BI.Jobs.Logic.Import.SalesImport
                     //summarized 
                     string dateKey = dateValue.ToString("yyyyMMdd");
                     string storeCode = storeId;
-                    sDAC.SummarizedStore(requestId, dateKey, storeCode);
+                   // sDAC.SummarizedStore(requestId, dateKey, storeCode);
                 }
                 catch (Exception)
                 {
@@ -118,7 +118,7 @@ namespace BI.Jobs.Logic.Import.SalesImport
             catch (Exception ex)
             {
                 //delete all record from same store same day same
-                sDAC.DeleteSalesDataForStoreDate(storeId, dateValue);
+               sDAC.DeleteSalesDataForStoreDate(storeId, dateValue);
                 throw new Exception($"Exception encountered when process store {storeId} for day {transDate}. Delete all record from same combination to prevent error. " + ex.ToString());
             }
         }

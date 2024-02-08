@@ -40,11 +40,8 @@ namespace BI.Jobs.Logic.DataSource
             //find target filepath 
             string targetFile = FileUtilities.GetStaticFilePath(fileName, fileExtension, hostingPath);
 
-            //high chances that there are existing file. 
-            //do not touch the existing file until we confirmed we can generate new file
             //get a temp name to generate new file first
-            //string tempFile = FileUtilities.CreateTempFile(targetFile);
-            string tempFile = @"C:\\Users\\Zer Min\\Desktop\\RG BI PROJECT\\BIImport\\aa.csv";
+            string tempFile = FileUtilities.CreateTempFile(targetFile);
             //write the header to the newly created temp file
             FileUtilities.WriteToFileWithPath(tempFile, header);
 

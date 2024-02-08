@@ -22,7 +22,7 @@ namespace BI.Jobs.Shared.Model
         public string RegionName { get; set; }
         public string CountryName { get; set; }
         public string AreaName { get; set; }
-        public string LocationCode { get; set; }
+      // public string LocationCode { get; set; }
         public string LocationName { get; set; }
         public int TotalTransaction { get; set; }
         public decimal TotalAmount { get; set; }

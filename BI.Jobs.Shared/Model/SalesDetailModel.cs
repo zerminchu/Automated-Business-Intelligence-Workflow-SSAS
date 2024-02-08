@@ -18,10 +18,14 @@ namespace BI.Jobs.Shared.Model
         public decimal TotalAmountWithoutTax { get; set; }
         public decimal Tax { get; set; }
         public decimal TotalAmountWithTax { get; set; }
+        public string transaction_start_datetime { get; set; }
+        public string savings { get; set; }
+
+
 
 
         public SalesDetailModel(string headerId, string skuId, decimal qty, decimal unitPrice,
-            decimal subtotal, decimal discount, decimal totalAmountWithoutTax, decimal tax, decimal totalAmountWithTax)
+            decimal subtotal, decimal discount, decimal totalAmountWithoutTax, decimal tax, decimal totalAmountWithTax, string transaction_start_datetime, string savings)
         {
             DetailId = String.Empty;
             HeaderId = headerId;
@@ -33,6 +37,10 @@ namespace BI.Jobs.Shared.Model
             TotalAmountWithoutTax = totalAmountWithoutTax;
             Tax = tax;
             TotalAmountWithTax = totalAmountWithTax;
+            this.transaction_start_datetime = transaction_start_datetime;
+            this.savings = savings;
+
+
         }
     }
 }
