@@ -27,6 +27,5 @@ namespace BI.Jobs.Shared.Model
         public int TotalTransaction { get; set; }
         public decimal TotalAmount { get; set; }
         public string BasketSize { get; set; }
-        //public string x { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace BI.Jobs.Shared.Model
 
     public class Params
     {
-        public string store_id { get; set; }
+        public string restaurant_id { get; set; }
         public string store_code { get; set; }
         public List<Tlog> tlogs { get; set; }
     }
@@ -92,8 +92,11 @@ namespace BI.Jobs.Shared.Model
         public string destination { get; set; }
         public string is_overring { get; set; }
         public string deleted_items { get; set; }
-       public string order_grand_total { get; set; }
-        //public string order_sub_total { get; set; }
+        public string order_grand_total { get; set; }
+        public string order_sub_total { get; set; }
+        public string total_rounding { get; set; }
+
+
 
 
 

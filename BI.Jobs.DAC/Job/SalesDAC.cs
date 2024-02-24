@@ -42,47 +42,37 @@ DELETE FactTransactionHeaders WHERE TransactionDate = @transDate
         }
 
    
-        public void CreateHeader(string requestId, string headerId, string storeId, DateTime transDt, Tlog data)
+        public void CreateHeader(string requestId, string headerId, string storeId, DateTime transDt, Tlog data, Params params_data)
         {
             const string SQL_QUERY =
                @" insert into FactTransactionHeaders(
 [TransactionHeaderId]
-,[TransactionNo]
+,[SaleId]
 ,[TransactionDate]
-,[TransactionYear]
-,[TransactionMonth]
-,[TransactionDay]
-,[TransactionHour]
-,[PayCode]
-,[CashierCode]
-,[BasketSize]
-,[CustomerId]
-,[TotalAmount]
-,[DateKey]
+,[SubTotal]
 ,[TotalAmountIncludeTax]
-,[receipt_ref_no]
-,[customId]
-,[destination]
+,[Destination]
+,[TransactionStartDateTime]
+,[TransactionEndDateTime]
+,[TotalRounding]
+,[IsOverring]
+,[DeletedItems]
+
 
 )
 Values(
 @TransactionHeaderId
-,@TransactionNo
+,@SaleId
 ,@TransactionDate
-,@TransactionYear
-,@TransactionMonth
-,@TransactionDay
-,@TransactionHour
-,@PayCode
-,@CashierCode
-,@BasketSize
-,@CustomerId
-,@TotalAmount
-,@DateKey
+,@SubTotal
 ,@TotalAmountIncludeTax
-,@receipt_ref_no
-,@customId
-,@destination
+,@Destination
+,@TransactionStartDateTime
+,@TransactionEndDateTime
+,@TotalRounding
+,@IsOverring
+,@DeletedItems
+
 ) ";
 
             using (var sqlConnection = new SqlConnection(SQLConnectionString))
@@ -90,30 +80,31 @@ Values(
                 using (SqlCommand cmd = new SqlCommand(SQL_QUERY, sqlConnection))
                 {
                     cmd.Parameters.AddWithValue("@TransactionHeaderId", headerId);
-                    cmd.Parameters.AddWithValue("@TransactionNo", data.sale_id);
+                    cmd.Parameters.AddWithValue("@SaleId", data.sale_id);
+
                     cmd.Parameters.AddWithValue("@TransactionDate", transDt);
-                    cmd.Parameters.AddWithValue("@TransactionYear", transDt.Year);
-                    cmd.Parameters.AddWithValue("@TransactionMonth", transDt.Month);
-                    cmd.Parameters.AddWithValue("@TransactionDay", transDt.Day);
-                    cmd.Parameters.AddWithValue("@TransactionHour", DBNull.Value);
-                    cmd.Parameters.AddWithValue("@PayCode", DBNull.Value);
-                    cmd.Parameters.AddWithValue("@CashierCode", DBNull.Value);
-                    cmd.Parameters.AddWithValue("@StoreCode", storeId);
-                    cmd.Parameters.AddWithValue("@BasketSize", DBNull.Value);
+                    //cmd.Parameters.AddWithValue("@TransactionYear", transDt.Year);
+                   // cmd.Parameters.AddWithValue("@TransactionMonth", transDt.Month);
+                  //  cmd.Parameters.AddWithValue("@TransactionDay", transDt.Day);
+                  //  cmd.Parameters.AddWithValue("@TransactionHour", DBNull.Value);
+                    //cmd.Parameters.AddWithValue("@order_grand_total", data.order_grand_total);
+                    //cmd.Parameters.AddWithValue("@CashierCode", DBNull.Value);
+                   // cmd.Parameters.AddWithValue("@StoreCode", storeId);
+                   // cmd.Parameters.AddWithValue("@BasketSize", DBNull.Value);
                     //cmd.Parameters.AddWithValue("@CustomerId", String.IsNullOrWhiteSpace(data.customer_id) ? DBNull.Value : data.customer_id);
-                    cmd.Parameters.AddWithValue("@CustomerId", DBNull.Value);
-                    //cmd.Parameters.AddWithValue("@TotalAmount", data.order_sub_total);
-                   cmd.Parameters.AddWithValue("@TotalAmount", data.order_grand_total);
-                    cmd.Parameters.AddWithValue("@destination", data.destination);
+                   cmd.Parameters.AddWithValue("@SubTotal", data.order_sub_total);
+                    cmd.Parameters.AddWithValue("@Destination", data.destination);
+                    cmd.Parameters.AddWithValue("@TransactionStartDateTime", data.transaction_start_datetime);
+                    cmd.Parameters.AddWithValue("@TransactionEndDateTime", data.transaction_start_datetime);
+                    cmd.Parameters.AddWithValue("@TotalRounding", data.total_rounding);
+                    cmd.Parameters.AddWithValue("@IsOverring", data.is_overring);
+                    cmd.Parameters.AddWithValue("@DeletedItems", data.deleted_items);
 
 
 
-                    string dtKey = transDt.ToString("yyyyMMdd");
-                    cmd.Parameters.AddWithValue("@DateKey", dtKey);
+                    //string dtKey = transDt.ToString("yyyyMMdd");
+                    // cmd.Parameters.AddWithValue("@DateKey", dtKey);
                     cmd.Parameters.AddWithValue("@TotalAmountIncludeTax", data.order_grand_total);
-
-                    cmd.Parameters.AddWithValue("@receipt_ref_no", DBNull.Value);
-                    cmd.Parameters.AddWithValue("@customId", requestId);
 
                     sqlConnection.Open();
                     cmd.ExecuteNonQuery();

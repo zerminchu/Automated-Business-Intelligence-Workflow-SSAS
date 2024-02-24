@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,9 +17,9 @@ namespace BI.Jobs.Logic.Import.SalesImport
         public void Import(SalesModel model, string requestId)
         {
             //clean prev data for same store and same day
-            //string storeId = model.@params.store_id.ToString();
+            //string storeId = model.@params.restaurant_id.ToString();
 
-            string storeId = model.@params.store_id == null ? "HardCodedStore": model.@params.store_id.ToString();
+            string storeId = model.@params.restaurant_id == null ? "HardCodedStore": model.@params.restaurant_id.ToString();
             string transDate = model.@params.tlogs.FirstOrDefault()!.date;
 
             transDate = "2024-01-01";
@@ -39,11 +40,12 @@ namespace BI.Jobs.Logic.Import.SalesImport
             //import
             try
             {
+          
                 foreach (var r in model.@params.tlogs)
                 {
                     //string requestId, string headerId, string storeId, DateTime transDt, Tlog data
                     string newHeaderId = Guid.NewGuid().ToString();
-                    sDAC.CreateHeader(requestId, newHeaderId, storeId, dateValue, r);
+                    sDAC.CreateHeader(requestId, newHeaderId, storeId, dateValue, r, model.@params);
 
                     if (r.valuemeals != null)
                     {
