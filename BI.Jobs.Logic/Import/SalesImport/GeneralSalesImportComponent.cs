@@ -40,26 +40,29 @@ namespace BI.Jobs.Logic.Import.SalesImport
             //import
             try
             {
-          
+
                 foreach (var r in model.@params.tlogs)
                 {
-                    //string requestId, string headerId, string storeId, DateTime transDt, Tlog data
                     string newHeaderId = Guid.NewGuid().ToString();
                     sDAC.CreateHeader(requestId, newHeaderId, storeId, dateValue, r, model.@params);
 
                     if (r.valuemeals != null)
                     {
-                        foreach (var vm in r.valuemeals)
-                        {
-                            decimal qty = Convert.ToDecimal(vm.count);
-                            decimal unitPrice = 0;
-                            decimal totalQtyWithUnitPrice = Convert.ToDecimal(vm.amount);
-                            decimal discount = Convert.ToDecimal(vm.discount);
-                            decimal tax = Convert.ToDecimal(vm.tax);
-                            decimal TotalAmountWithTax = Convert.ToDecimal(vm.total_amount);
 
-                            SalesDetailModel dm = new SalesDetailModel(newHeaderId, vm.valuemeal_id, qty, unitPrice,
-                                totalQtyWithUnitPrice, discount, totalQtyWithUnitPrice - discount, tax, TotalAmountWithTax, r.transaction_start_datetime, vm.savings);
+                            foreach (var vm in r.valuemeals)  
+                        {
+                            decimal valuemeal_count = Convert.ToDecimal(vm.count);
+                            decimal valuemeal_amount = Convert.ToDecimal(vm.amount);
+                            decimal valuemeal_discount = Convert.ToDecimal(vm.discount);
+                            decimal valuemeal_subtotal = Convert.ToDecimal(vm.sub_total);
+                            decimal valuemeal_grandtotal = Convert.ToDecimal(vm.grand_total);
+                            decimal valuemeal_taxtotal = Convert.ToDecimal(vm.tax_total);
+
+
+
+
+                            SalesDetailModel dm = new SalesDetailModel(newHeaderId, vm.valuemeal_id, r.transaction_start_datetime, vm.third_party_id, vm.valuemeal_name, valuemeal_count, valuemeal_amount, vm.savings,
+                                valuemeal_discount, valuemeal_subtotal, valuemeal_grandtotal, valuemeal_taxtotal, vm.mode);
 
                             sDAC.CreateDetail(requestId, dm);
 
@@ -67,15 +70,7 @@ namespace BI.Jobs.Logic.Import.SalesImport
                             {
                                 foreach (var vmp in vm.valuemeal_products)
                                 {
-                                    decimal vmp_qty = Convert.ToDecimal(vmp.count);
-                                    decimal vmp_unitPrice = 0;
-                                    decimal vmp_totalQtyWithUnitPrice = Convert.ToDecimal(vmp.amount);
-                                    decimal vmp_discount = 0;
-                                    decimal vmp_tax = 0;
-                                    decimal vmp_TotalAmountWithTax = Convert.ToDecimal(vmp.amount);
 
-                                    SalesDetailModel vmp_dm = new SalesDetailModel(newHeaderId, vmp.product_id, vmp_qty, vmp_unitPrice,
-                                        vmp_totalQtyWithUnitPrice, vmp_discount, vmp_totalQtyWithUnitPrice - vmp_discount, vmp_tax, vmp_TotalAmountWithTax, r.transaction_start_datetime, "");
                                 }
                             }
                         }
@@ -88,17 +83,37 @@ namespace BI.Jobs.Logic.Import.SalesImport
                         foreach (var p in r.products)
                         {
 
-                            decimal qty = Convert.ToDecimal(p.count);
-                            decimal unitPrice = 0;
-                            decimal totalQtyWithUnitPrice = Convert.ToDecimal(p.amount);
-                            decimal discount = Convert.ToDecimal(p.discount);
-                            decimal tax = Convert.ToDecimal(p.tax);
-                            decimal TotalAmountWithTax = Convert.ToDecimal(p.total_amount);
+                            decimal products_amount = Convert.ToDecimal(p.amount);
+                            decimal products_count = Convert.ToDecimal(p.count);
+                            decimal products_discount = Convert.ToDecimal(p.discount);
+                            decimal products_subtotal = Convert.ToDecimal(p.sub_total);
+                            decimal products_grandtotal = Convert.ToDecimal(p.grand_total);
+                            decimal products_taxtotal = Convert.ToDecimal(p.tax_total);
 
-                            SalesDetailModel dm = new SalesDetailModel(newHeaderId, p.product_id, qty, unitPrice,
-                                totalQtyWithUnitPrice, discount, totalQtyWithUnitPrice - discount, tax, TotalAmountWithTax, r.transaction_start_datetime, "");
 
-                            sDAC.CreateDetail(requestId, dm);
+
+
+                            ProductDetailModel pdm = new ProductDetailModel(newHeaderId, p.product_id, p.third_party_id, p.product_name, products_count, products_amount,
+                                products_discount, products_subtotal, products_grandtotal, products_taxtotal, p.price, p.a_la_carte_price, p.mode);
+
+                            sDAC.CreateDetail2(requestId, pdm);
+
+                        }
+                    }
+
+
+                    if (r.tenders != null)
+                    {
+                        foreach (var t in r.tenders)
+                        {
+
+                            decimal tender_amount = Convert.ToDecimal(t.amount);
+                            decimal tender_count = Convert.ToDecimal(t.count);
+
+                            TenderDetailModel tdm = new TenderDetailModel(newHeaderId, t.tender_id, t.third_party_id, t.tender_name, tender_count, tender_amount, t.is_change, t.mode);
+
+                            sDAC.CreateDetail3(requestId, tdm);
+
                         }
                     }
                 }

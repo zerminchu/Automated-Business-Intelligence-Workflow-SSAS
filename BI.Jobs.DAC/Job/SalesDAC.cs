@@ -83,19 +83,10 @@ Values(
                     cmd.Parameters.AddWithValue("@SaleId", data.sale_id);
 
                     cmd.Parameters.AddWithValue("@TransactionDate", transDt);
-                    //cmd.Parameters.AddWithValue("@TransactionYear", transDt.Year);
-                   // cmd.Parameters.AddWithValue("@TransactionMonth", transDt.Month);
-                  //  cmd.Parameters.AddWithValue("@TransactionDay", transDt.Day);
-                  //  cmd.Parameters.AddWithValue("@TransactionHour", DBNull.Value);
-                    //cmd.Parameters.AddWithValue("@order_grand_total", data.order_grand_total);
-                    //cmd.Parameters.AddWithValue("@CashierCode", DBNull.Value);
-                   // cmd.Parameters.AddWithValue("@StoreCode", storeId);
-                   // cmd.Parameters.AddWithValue("@BasketSize", DBNull.Value);
-                    //cmd.Parameters.AddWithValue("@CustomerId", String.IsNullOrWhiteSpace(data.customer_id) ? DBNull.Value : data.customer_id);
-                   cmd.Parameters.AddWithValue("@SubTotal", data.order_sub_total);
+                    cmd.Parameters.AddWithValue("@SubTotal", data.order_sub_total);
                     cmd.Parameters.AddWithValue("@Destination", data.destination);
                     cmd.Parameters.AddWithValue("@TransactionStartDateTime", data.transaction_start_datetime);
-                    cmd.Parameters.AddWithValue("@TransactionEndDateTime", data.transaction_start_datetime);
+                    cmd.Parameters.AddWithValue("@TransactionEndDateTime", data.transaction_end_datetime);
                     cmd.Parameters.AddWithValue("@TotalRounding", data.total_rounding);
                     cmd.Parameters.AddWithValue("@IsOverring", data.is_overring);
                     cmd.Parameters.AddWithValue("@DeletedItems", data.deleted_items);
@@ -118,47 +109,133 @@ Values(
                @" 
 
 
-INSERT INTO FactTransactionDetails
+INSERT INTO FactTransactionDetailsVM
 (
 [TransactionDetailId]
-,[TransactionHeaderId]
-,[Quantity]
-,[UnitPrice]
-,[TotalAmountIncludeTax]
-,[transaction_start_datetime]
-,[SKU]
-,[savings]
+    ,[TransactionHeaderId]
+    ,[TransactionStartDateTime]
+    ,[ValueMealId]
+    ,[ValueMealThirdPartyId]
+    ,[ValueMealName]
+    ,[ValueMealCount]
+    ,[ValueMealAmount]
+    ,[ValueMealSavings]
+    ,[ValueMealDiscount]
+    ,[ValueMealSubTotal]
+    ,[ValueMealGrandTotal]
+    ,[ValueMealTaxTotal]
+    ,[ValueMealMode]
+)
+VALUES
+(
+NEWID()
+    ,@TransactionHeaderId
+    ,@TransactionStartDateTime
+    ,@ValueMealId
+    ,@ValueMealThirdPartyId
+    ,@ValueMealName
+    ,@ValueMealCount
+    ,@ValueMealAmount
+    ,@ValueMealSavings
+    ,@ValueMealDiscount
+    ,@ValueMealSubTotal
+    ,@ValueMealGrandTotal
+    ,@ValueMealTaxTotal
+    ,@ValueMealMode
+) ;";
+
+
+
+            using (var sqlConnection = new SqlConnection(SQLConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(SQL_QUERY, sqlConnection))
+                {
+                    cmd.Parameters.AddWithValue("@TransactionHeaderId", data.HeaderId);
+                    cmd.Parameters.AddWithValue("@TransactionStartDateTime", data.transaction_start_datetime);
+                    cmd.Parameters.AddWithValue("@ValueMealId", data.valuemeal_id);
+                    cmd.Parameters.AddWithValue("@ValueMealThirdPartyId", data.valuemeal_third_party_id);
+                    cmd.Parameters.AddWithValue("@ValueMealName", data.valuemeal_name);
+                    cmd.Parameters.AddWithValue("@ValueMealCount", data.ValueMealCount);
+                    cmd.Parameters.AddWithValue("@ValueMealAmount", data.ValueMealAmount);
+                    cmd.Parameters.AddWithValue("@ValueMealSavings", data.valuemeal_savings);
+                    cmd.Parameters.AddWithValue("@ValueMealDiscount", data.ValueMealDiscount);
+                    cmd.Parameters.AddWithValue("@ValueMealSubTotal", data.ValueMealSubTotal);
+                    cmd.Parameters.AddWithValue("@ValueMealGrandTotal", data.ValueMealGrandTotal);
+                    cmd.Parameters.AddWithValue("@ValueMealTaxTotal", data.ValueMealTaxTotal);
+                    cmd.Parameters.AddWithValue("@ValueMealMode", data.valuemeal_mode);
+
+                    sqlConnection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+
+
+        public void CreateDetail2(string requestId, ProductDetailModel data)
+        {
+            const string SQL_QUERY =
+               @" 
+
+ INSERT INTO FactTransactionDetails
+(
+[TransactionDetailId]
+    ,[TransactionHeaderId]
+    ,[ProductsId]
+    ,[ProductsThirdPartyId]
+    ,[ProductsName]
+    ,[ProductsCount]
+    ,[ProductsAmount]
+    ,[ProductsDiscount]
+    ,[ProductsSubTotal]
+    ,[ProductsGrandTotal]
+    ,[ProductsTaxTotal]
+    ,[ProductsPrice]
+    ,[ProductsAlacarte]
+    ,[ProductsMode]
 
 
 )
 VALUES
 (
 NEWID()
-,@TransactionHeaderId
-,@Quantity
-,@UnitPrice
-,@TotalAmountIncludeTax
-,@transaction_start_datetime
-,@SKU
-,@savings
+    ,@TransactionHeaderId
+    ,@ProductsId
+    ,@ProductsThirdPartyId
+    ,@ProductsName
+    ,@ProductsCount
+    ,@ProductsAmount
+    ,@ProductsDiscount
+    ,@ProductsSubTotal
+    ,@ProductsGrandTotal
+    ,@ProductsTaxTotal
+    ,@ProductsPrice
+    ,@ProductsAlacarte
+    ,@ProductsMode
+);";
 
-) ";
+
 
             using (var sqlConnection = new SqlConnection(SQLConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(SQL_QUERY, sqlConnection))
                 {
-                    //cmd.Parameters.AddWithValue("@TransactionDetailId", headerId);
+
+
                     cmd.Parameters.AddWithValue("@TransactionHeaderId", data.HeaderId);
-                    cmd.Parameters.AddWithValue("@ProductCode", data.SkuId);
-                    cmd.Parameters.AddWithValue("@Quantity", data.Qty);
-                    cmd.Parameters.AddWithValue("@UnitPrice", data.UnitPrice);
-                    cmd.Parameters.AddWithValue("@TotalAmountIncludeTax", data.TotalAmountWithTax);
-                    cmd.Parameters.AddWithValue("@transaction_start_datetime", data.transaction_start_datetime);
-                    cmd.Parameters.AddWithValue("@SKU", data.SkuId);
-                    cmd.Parameters.AddWithValue("@savings", data.savings);
-
-
+                    cmd.Parameters.AddWithValue("@ProductsId", data.product_id);
+                    cmd.Parameters.AddWithValue("@ProductsThirdPartyId", data.product_third_party_id);
+                    cmd.Parameters.AddWithValue("@ProductsName", data.product_name);
+                    cmd.Parameters.AddWithValue("@ProductsCount", data.ProductsCount);
+                    cmd.Parameters.AddWithValue("@ProductsAmount", data.ProductsAmount);
+                    cmd.Parameters.AddWithValue("@ProductsDiscount", data.ProductsDiscount);
+                    cmd.Parameters.AddWithValue("@ProductsSubTotal", data.ProductsSubTotal);
+                    cmd.Parameters.AddWithValue("@ProductsGrandTotal", data.ProductsGrandTotal);
+                    cmd.Parameters.AddWithValue("@ProductsTaxTotal", data.ProductsTaxTotal);
+                    cmd.Parameters.AddWithValue("@ProductsPrice", data.product_price);
+                    cmd.Parameters.AddWithValue("@ProductsAlacarte", data.product_alacarte);
+                    cmd.Parameters.AddWithValue("@ProductsMode", data.product_mode);
 
                     sqlConnection.Open();
                     cmd.ExecuteNonQuery();
@@ -166,37 +243,89 @@ NEWID()
             }
         }
 
-        public void SummarizedStore(string requestId, string DateKey)
+
+
+
+        public void CreateDetail3(string requestId, TenderDetailModel data)
         {
             const string SQL_QUERY =
                @" 
-EXEC spSummarized_Sum_Stores_WithoutHour @DateKey";
+
+ INSERT INTO FactTxnDetailsTender
+(
+[TransactionDetailId]
+    ,[TransactionHeaderId]
+    ,[TenderId]
+    ,[TenderThirdPartyId]
+    ,[TenderName]
+    ,[TenderCount]
+    ,[TenderAmount]
+    ,[TenderIsChange]
+    ,[TenderMode]
+ 
+
+)
+VALUES
+(
+NEWID()
+    ,@TransactionHeaderId
+    ,@TenderId
+    ,@TenderThirdPartyId
+    ,@TenderName
+    ,@TenderCount
+    ,@TenderAmount
+    ,@TenderIsChange
+    ,@TenderMode
+);";
+
+
 
             using (var sqlConnection = new SqlConnection(SQLConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(SQL_QUERY, sqlConnection))
                 {
-                    //cmd.Parameters.AddWithValue("@TransactionDetailId", headerId);
-                    cmd.Parameters.AddWithValue("@DateKey", DateKey);
-                  //  cmd.Parameters.AddWithValue("@LocationCode", LocationCode);
+
+
+                    cmd.Parameters.AddWithValue("@TransactionHeaderId", data.HeaderId);
+                    cmd.Parameters.AddWithValue("@TenderId", data.tender_id);
+                    cmd.Parameters.AddWithValue("@TenderThirdPartyId", data.tender_third_party_id);
+                    cmd.Parameters.AddWithValue("@TenderName", data.tender_name);
+                    cmd.Parameters.AddWithValue("@TenderCount", data.TenderCount);
+                    cmd.Parameters.AddWithValue("@TenderAmount", data.TenderAmount);
+                    cmd.Parameters.AddWithValue("@TenderIsChange", data.tender_is_change);
+                    cmd.Parameters.AddWithValue("@TenderMode", data.tender_mode);
+                 
                     sqlConnection.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
         }
 
-        public void SummarizedProduct(string requestId, string DateKey)
+
+        public void SummarizedStore(string requestId)
         {
             const string SQL_QUERY =
-               @" 
-EXEC spSummarized_Sum_Products_WithoutHour @DateKey"; // change the stored procedure 
+                @"";
 
             using (var sqlConnection = new SqlConnection(SQLConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(SQL_QUERY, sqlConnection))
                 {
-                    //cmd.Parameters.AddWithValue("@TransactionDetailId", headerId);
-                    cmd.Parameters.AddWithValue("@DateKey", DateKey);
+                    sqlConnection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+        public void SummarizedProduct(string requestId)
+        {
+            const string SQL_QUERY =
+               @""; 
+            using (var sqlConnection = new SqlConnection(SQLConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(SQL_QUERY, sqlConnection))
+                {
                     sqlConnection.Open();
                     cmd.ExecuteNonQuery();
                 }
@@ -209,26 +338,7 @@ EXEC spSummarized_Sum_Products_WithoutHour @DateKey"; // change the stored proce
             try
             {
                const string SQL_QUERY =
-                   @"SELECT [Year]
-                  ,[FiscalYear]
-                  ,[Month]
-                  ,[FiscalMonth]
-                  ,[DayOfMonth]
-                  ,[Quarter]
-                  ,[FiscalQuarter]
-                  ,[DayOfYear]
-                  ,[WeekOfMonth]
-                  ,[FiscalWeekOfYear]
-                  ,[DateKey]
-                  ,[RegionName]
-                  ,[CountryName]
-                  ,[AreaName]
-               
-                  ,[LocationName]
-                  ,[TotalTransaction]
-                  ,[TotalAmount]
-                  ,[BasketSize]
-              FROM [Sum_Stores_WithoutHour] ";
+                  @"EXEC sp_BI_Main_Data";
 
                 using (var sqlConnection = new SqlConnection(SQLConnectionString))
                 {
@@ -241,26 +351,32 @@ EXEC spSummarized_Sum_Products_WithoutHour @DateKey"; // change the stored proce
                             while (dr.Read())
                             {
                                 var t = new SummarizedStore();
-                                t.Year = GetDataValue<string>(dr, "Year");
-                                t.FiscalYear = GetDataValue<string>(dr, "FiscalYear");
-                                t.Month = GetDataValue<string>(dr, "Month");
-                                t.FiscalMonth = GetDataValue<string>(dr, "FiscalMonth");
-                                t.DayOfMonth = GetDataValue<string>(dr, "DayOfMonth");
-                                t.Quarter = GetDataValue<string>(dr, "Quarter");
-                                t.FiscalQuarter = GetDataValue<string>(dr, "FiscalQuarter");
-                                t.DayOfYear = GetDataValue<string>(dr, "DayOfYear");
-                                t.WeekOfMonth = GetDataValue<string>(dr, "WeekOfMonth");
-                                t.FiscalWeekOfYear = GetDataValue<string>(dr, "FiscalWeekOfYear");
-                                t.DateKey = GetDataValue<int>(dr, "DateKey");
-                                t.RegionName = GetDataValue<string>(dr, "RegionName");
-                                t.CountryName = GetDataValue<string>(dr, "CountryName");
-                                t.AreaName = GetDataValue<string>(dr, "AreaName");
-                               // t.LocationCode = GetDataValue<string>(dr, "LocationCode");
-                                t.LocationName = GetDataValue<string>(dr, "LocationName");
-                                t.TotalTransaction = GetDataValue<int>(dr, "TotalTransaction");
-                                t.TotalAmount = GetDataValue<decimal>(dr, "TotalAmount");
-                                t.BasketSize = (GetDataValue<decimal>(dr, "BasketSize")).ToString();
-                                //t.x = GetDataValue<string>(dr, "x");
+                                t.TenderName = GetDataValue<string>(dr, "TenderName");
+                                t.TenderCount = GetDataValue<decimal>(dr, "TenderCount");
+                                t.TenderAmount = GetDataValue<decimal>(dr, "TenderAmount");
+                                t.TenderIsChange = GetDataValue<bool>(dr, "TenderIsChange");
+                                t.TenderMode = GetDataValue<string>(dr, "TenderMode");
+
+                                t.ValueMealName = GetDataValue<string>(dr, "ValueMealName");
+                                t.ValueMealCount = GetDataValue<decimal>(dr, "ValueMealCount");
+                                t.ValueMealAmount = GetDataValue<decimal>(dr, "ValueMealAmount");
+                                t.ValueMealDiscount = GetDataValue<decimal>(dr, "ValueMealDiscount");
+                                t.ValueMealSubTotal = GetDataValue<decimal>(dr, "ValueMealSubTotal");
+                                t.ValueMealGrandTotal = GetDataValue<decimal>(dr, "ValueMealGrandTotal");
+                                t.ValueMealTaxTotal = GetDataValue<decimal>(dr, "ValueMealTaxTotal");
+                                t.ValueMealMode = GetDataValue<string>(dr, "ValueMealMode");
+
+                                t.ProductsName = GetDataValue<string>(dr, "ProductsName");
+                                t.ProductsCount = GetDataValue<decimal>(dr, "ProductsCount");
+                                t.ProductsAmount = GetDataValue<decimal>(dr, "ProductsAmount");
+                                t.ProductsDiscount = GetDataValue<decimal>(dr, "ProductsDiscount");
+                                t.ProductsSubTotal = GetDataValue<decimal>(dr, "ProductsSubTotal");
+                                t.ProductsGrandTotal = GetDataValue<decimal>(dr, "ProductsGrandTotal");
+                                t.ProductsTaxTotal = GetDataValue<decimal>(dr, "ProductsTaxTotal");
+                                t.ProductsPrice = GetDataValue<string>(dr, "ProductsPrice");
+                                t.ProductsAlacarte = GetDataValue<string>(dr, "ProductsAlacarte");
+                                t.ProductsMode = GetDataValue<string>(dr, "ProductsMode");
+
                                 result.Add(t);
                             }
 
@@ -283,27 +399,7 @@ EXEC spSummarized_Sum_Products_WithoutHour @DateKey"; // change the stored proce
             try
             {
                 const string SQL_QUERY =
-               @"SELECT[Year]
-      ,[FiscalYear]
-      ,[Month]
-      ,[FiscalMonth]
-      ,[DayOfMonth]
-      ,[Quarter]
-      ,[FiscalQuarter]
-      ,[DayOfYear]
-      ,[WeekOfMonth]
-      ,[FiscalWeekOfYear]
-      ,[DateKey]
-      ,[ProductName]
-      ,''
-	  ,''
-	  ,''
-	  ,''
-      ,[TotalTransaction]
-      ,[TotalAmount]
-      ,[BasketSize]
-
-                FROM[Sum_Stores_WithoutHour]; ";
+               @"";
 
                 using (var sqlConnection = new SqlConnection(SQLConnectionString))
                 {
@@ -316,25 +412,8 @@ EXEC spSummarized_Sum_Products_WithoutHour @DateKey"; // change the stored proce
                             while (dr.Read())
                             {
                                 var t = new SummarizedProduct();
-                                t.Year = GetDataValue<string>(dr, "Year");
-                                t.FiscalYear = GetDataValue<string>(dr, "FiscalYear");
-                                t.Month = GetDataValue<string>(dr, "Month");
-                                t.FiscalMonth = GetDataValue<string>(dr, "FiscalMonth");
-                                t.DayOfMonth = GetDataValue<string>(dr, "DayOfMonth");
-                                t.Quarter = GetDataValue<string>(dr, "Quarter");
-                                t.FiscalQuarter = GetDataValue<string>(dr, "FiscalQuarter");
-                                t.DayOfYear = GetDataValue<string>(dr, "DayOfYear");
-                                t.WeekOfMonth = GetDataValue<string>(dr, "WeekOfMonth");
-                                t.FiscalWeekOfYear = GetDataValue<string>(dr, "FiscalWeekOfYear");
-                                t.DateKey = GetDataValue<int>(dr, "DateKey");
-                                t.ProductName = GetDataValue<string>(dr, "ProductName");
-                                t.CategoryName = "";
-                                t.DepartmentName = "";
-                                t.GroupName = "";
-                                t.DivisionName = "";
-                                t.TotalTransaction = 0;
-                                t.TotalAmount = GetDataValue<decimal>(dr, "TotalAmount");
-                                t.BasketSize = GetDataValue<decimal>(dr, "BasketSize");
+            
+                                t.ValueMealName = GetDataValue<string>(dr, "ValueMealName");
 
                                 result.Add(t);
                             }

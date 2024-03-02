@@ -8,24 +8,36 @@ namespace BI.Jobs.Shared.Model
 {
     public class SummarizedStore
     {
-        public string Year { get; set; }
-        public string FiscalYear { get; set; }
-        public string Month { get; set; }
-        public string FiscalMonth { get; set; }
-        public string DayOfMonth { get; set; }
-        public string Quarter { get; set; }
-        public string FiscalQuarter { get; set; }
-        public string DayOfYear { get; set; }
-        public string WeekOfMonth { get; set; }
-        public string FiscalWeekOfYear { get; set; }
-        public int DateKey { get; set; }
-        public string RegionName { get; set; }
-        public string CountryName { get; set; }
-        public string AreaName { get; set; }
-      // public string LocationCode { get; set; }
-        public string LocationName { get; set; }
-        public int TotalTransaction { get; set; }
-        public decimal TotalAmount { get; set; }
-        public string BasketSize { get; set; }
+   
+        public string ValueMealName { get; set; }
+        public string ValueMealId { get; set; }
+        public string ValueMealThirdPartyId { get; set; }
+        public decimal ValueMealCount { get; set; }
+        public decimal ValueMealAmount { get; set; }
+        public string ValueMealSavings { get; set; }
+        public decimal ValueMealDiscount { get; set; }
+        public decimal ValueMealSubTotal { get; set; }
+        public decimal ValueMealGrandTotal { get; set; }
+        public decimal ValueMealTaxTotal { get; set; }
+        public string ValueMealMode { get; set; }
+
+        public string TenderName { get; set; }
+        public decimal TenderCount { get; set; }
+        public decimal TenderAmount { get; set; }
+        public bool TenderIsChange { get; set; }
+        public string TenderMode { get; set; }
+
+        public string ProductsName { get; set; }
+        public decimal ProductsCount { get; set; }
+        public decimal ProductsAmount { get; set; }
+        public decimal ProductsDiscount { get; set; }
+        public decimal ProductsSubTotal { get; set; }
+        public decimal ProductsGrandTotal { get; set; }
+        public decimal ProductsTaxTotal { get; set; }
+        public string ProductsPrice { get; set; }
+        public string ProductsAlacarte { get; set; }
+        public string ProductsMode { get; set; }
+
+
     }
 }

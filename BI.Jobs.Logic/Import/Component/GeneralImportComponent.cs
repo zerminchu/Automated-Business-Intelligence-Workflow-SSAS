@@ -73,8 +73,7 @@ namespace BI.Jobs.Logic.Import.Component
                 }
                 catch (Exception)
                 {
-                    //possibly dirty read due to other thread grab the file
-                    //ignore this error and continue
+      
                 }
             }
         }

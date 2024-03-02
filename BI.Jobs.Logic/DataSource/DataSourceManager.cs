@@ -25,9 +25,9 @@ namespace BI.Jobs.Logic.DataSource
                 throw new Exception("Invalid DataSourceType for DataSourceManager");
 
             _setting = AppSettingsUtil.GetSection<DataSourceSettingModel>($"DataSourceSettings:{dataSourceType}");
-            if(_setting == null || String.IsNullOrWhiteSpace(_setting.fileName) 
-                || String.IsNullOrWhiteSpace(_setting.fileExtension))
-                throw new Exception($"Invalid appsetting config for DataSourceManager {dataSourceType}");
+           // if(_setting == null || String.IsNullOrWhiteSpace(_setting.fileName) 
+             //   || String.IsNullOrWhiteSpace(_setting.fileExtension))
+               // throw new Exception($"Invalid appsetting config for DataSourceManager {dataSourceType}");
         }
 
         public void Generate()

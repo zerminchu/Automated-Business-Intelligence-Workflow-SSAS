@@ -32,20 +32,11 @@ builder
     })
     .ConfigureServices((context, s) =>
     {
-        //s.AddScoped<ILogComponentFactory, LogComponentFactory>();
-        //s.AddSingleton<ILogComponentFactory>(new LogComponentFactory(type));
+      
         s.BuildServiceProvider();
     });
 #endregion
 Console.WriteLine("Step 1 - Finish Read environmental setting");
-
-////sample
-//List<KeyValuePair<string, string>> sample = new SampleSSASComponent().GetSampleValue(1, 2022);
-//foreach (var s in sample)
-//{
-//    Console.WriteLine($"Key: {s.Key}, Value: {s.Value}");
-//}
-//return;
 
 
 #region call API to get the source file from UNICON web service
@@ -67,16 +58,10 @@ const string masterProductFileCode = "Product*.txt";
 const string salesFileCode = "*Sales*";
 
 //directory to read the files
-//string targetDirectory = @"C:\\BIImport\\Sales";
 string targetDirectory = AppSettingsUtil.GetValue<string>("GeneralConfig:targetDirectory");
-//string targetDirectoryForSales = AppSettingsUtil.GetValue<string>("GeneralConfig:targetDirectory");
 
-//datetime folder to read from the target directory
-//in actual environemnt:
-//1. this value should be today date, so job is importing from folder labelled with today date
-//2. this value can set manually to read from specific date, which is to reimport the data from that date
-//Datetime dt = DateTime.Now;
-DateTime dt = new DateTime(2023, 1, 21); //--!!
+
+ DateTime dt = DateTime.Now;
 
 //generic parameters to identify the instances of job
 string currentRunValueAsJobId = Guid.NewGuid().ToString();
@@ -95,14 +80,7 @@ string importMasterStoreDataJobPerformer = ConfigManager.GetRunner();
 ImportParam importMasterStoreDataJobParams = new ImportParam(clientCode, importMasterStoreDataFileCode, 
     dt, targetDirectory, importMasterStoreDataJobId, importMasterStoreDataJobPerformer);
 
-//read file, import them into database
-//database specified in appsetting
-//"ConnectionStrings": {
-//    //"Default": "Data Source=.;Catalog=CubeSample;User ID=RGT-KKWONG\\kk.wong;Password=p@ssw0rd"
-//    "SQL": "Data Source=.;Initial Catalog=bi_data_dev;Integrated Security=True;",
-//    //"MDX": "Data Source=.;Catalog=CubeSample;User ID=bipocvm\\bipoc;Password=p@ssw0rd"
-//    "MDX": "Data Source=.\\SQL2019;Catalog=CubeSample;User ID=.\\Administrator;Password="
-//  },
+
 IImportComponent createImportStoreJobComponent = new GeneralImportComponent(importMasterStoreDataJobParams,
     importMasterStoreDataJobType, logger);
 createImportStoreJobComponent.CreateImportJob();
@@ -122,8 +100,7 @@ importMasterStoreComponent.ProcessImportJob();
 
 #endregion
 #endregion
-cm.Print($"Step 2 - Finish import Store Master Data");
-// Imported all data in Store into database
+cm.Print($"Step 2 - Store Master Data Imported Successfully");
 
 
 
@@ -154,7 +131,7 @@ IImportComponent importMasterProductComponent = new GeneralImportComponent(proce
 importMasterProductComponent.ProcessImportJob();
 #endregion
 #endregion
-cm.Print($"Step 3 - Finish import Product Master Data");
+cm.Print($"Step 3 - Product Master Data Imported Successfully");
 
 
 cm.Print($"Step 4 - Start Import Sales Data");
@@ -180,11 +157,11 @@ IImportComponent importJobComponent = new GeneralImportComponent(processSalesJob
 importJobComponent.ProcessImportJob();
 #endregion
 #endregion
-cm.Print($"Step 4 - Finish Import Sales Data");   // All data will be imported into database e.g. Store, Product, Sales
+cm.Print($"Step 4 - Finish Import Sales Data");   
 
 
 
-cm.Print($"Step 5 - Start Summarized Sales Data"); // summarise all data, to prevent so many columns passed into database. 
+cm.Print($"Step 5 - Start Summarized Sales Data"); 
 #region step 5
 string sumRequestId = currentRunValueAsJobId;
 string sumPerformer = ConfigManager.GetRunner();
@@ -192,12 +169,11 @@ var salesSummarizedComponent = new SummarizedComponentFactory()
     .GetSummarziedComponent(SummarizedComponentType.SALES, sumRequestId, sumPerformer, logger);
 salesSummarizedComponent.Summarized(dt.ToString("yyyyMMdd"));
 #endregion
-cm.Print($"Step 5 - Finish Summarized Sales Data");
+cm.Print($"Step 5 - Summarized Sales Data Imported Successfully");
 
 
 cm.Print($"Step 6 - Start Generate Data source file");
 #region step 6
-//dt.ToString();
 DataSourceManager SalesVsProductManager = new DataSourceManager(clientCode, DataSourceType.SalesVsProduct);
 SalesVsProductManager.Generate();
 SalesVsProductManager.HouseKeeping();
@@ -207,6 +183,5 @@ SalesVsStoreManager.Generate();
 SalesVsStoreManager.HouseKeeping();
 
 #endregion
-cm.Print($"Step 6 - Finish Generate Data source file");
+cm.Print($"Step 6 - Data source file generated successfully");
 
-// FUTURE DEV

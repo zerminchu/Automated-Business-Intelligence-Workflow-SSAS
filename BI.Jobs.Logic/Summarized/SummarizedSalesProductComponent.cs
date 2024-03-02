@@ -24,12 +24,12 @@ namespace BI.Jobs.Logic.Summarized
             _logger = logger;
         }
 
-        public void Summarized(string datekey)
+        public void Summarized(string requestId)
         {
             try
             {
                 var sDAC = new SalesDAC();
-                sDAC.SummarizedProduct(_requestId, datekey);
+                sDAC.SummarizedProduct(_requestId);
             }
             catch (Exception ex)
             {

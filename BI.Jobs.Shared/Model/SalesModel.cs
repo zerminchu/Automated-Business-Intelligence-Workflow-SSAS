@@ -40,6 +40,10 @@ namespace BI.Jobs.Shared.Model
         public List<object> product_qualifiers { get; set; }
         public string sub_total { get; set; }
         public string savings { get; set; }
+        public string valuemeal_name { get; set; }
+        public string grand_total { get; set; }
+        public string tax_total { get; set; }
+
 
 
     }
@@ -116,7 +120,8 @@ namespace BI.Jobs.Shared.Model
         public string amount { get; set; }
         public string discount { get; set; }
         public string sub_total { get; set; }
-        public string tax { get; set; }
+        public string grand_total { get; set; }
+        public string tax_total { get; set; }
         public string total_amount { get; set; }
         public string savings { get; set; }
         public string mode { get; set; }

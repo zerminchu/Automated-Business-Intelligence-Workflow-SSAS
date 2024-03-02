@@ -30,7 +30,6 @@ namespace BI.Jobs.Logic.DataSource
             }
             catch (Exception ex)
             {
-                //do not interrupt whole process even if error
                 string m = ex.Message;
             }
         }
