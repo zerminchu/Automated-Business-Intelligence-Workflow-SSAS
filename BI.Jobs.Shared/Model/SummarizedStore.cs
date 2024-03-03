@@ -10,11 +10,8 @@ namespace BI.Jobs.Shared.Model
     {
    
         public string ValueMealName { get; set; }
-        public string ValueMealId { get; set; }
-        public string ValueMealThirdPartyId { get; set; }
         public decimal ValueMealCount { get; set; }
         public decimal ValueMealAmount { get; set; }
-        public string ValueMealSavings { get; set; }
         public decimal ValueMealDiscount { get; set; }
         public decimal ValueMealSubTotal { get; set; }
         public decimal ValueMealGrandTotal { get; set; }

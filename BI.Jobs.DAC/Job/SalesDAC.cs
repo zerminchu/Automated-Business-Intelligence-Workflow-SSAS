@@ -337,9 +337,9 @@ NEWID()
             List<SummarizedStore> result = new List<SummarizedStore>();
             try
             {
-               const string SQL_QUERY =
-                  @"EXEC sp_BI_Main_Data";
-
+                const string SQL_QUERY =
+                   @"EXEC dbo.sp_BI_Main_Data";
+               
                 using (var sqlConnection = new SqlConnection(SQLConnectionString))
                 {
                     using (SqlCommand cmd = new SqlCommand(SQL_QUERY, sqlConnection))
